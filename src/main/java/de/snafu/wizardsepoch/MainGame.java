@@ -1,6 +1,8 @@
 package de.snafu.wizardsepoch;
 
+import de.snafu.wizardsepoch.scenes.SceneManager;
 import de.snafu.wizardsepoch.util.LoggingOutputStream;
+import de.snafu.wizardsepoch.util.Time;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.Version;
@@ -39,6 +41,7 @@ public class MainGame {
             log.error(e);
         }
     }
+
 
     @SuppressWarnings("resource") // suppress warnings about ignored Autoclosables from the setCallback Methods
     private void init() {
@@ -88,15 +91,37 @@ public class MainGame {
     }
 
     private void loop() {
+        float frameBeginTime;
+        float frameEndTime;
+        float deltaTime;
+
+        frameBeginTime = Time.getTime();
+
         GL.createCapabilities();
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+
+        if (KeyboardListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
+            glfwSetWindowShouldClose(window, true);
+        }
+
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             MouseListener.endFrame();
+            KeyboardListener.endFrame();
+
             glfwSwapBuffers(window);
             glfwPollEvents();
+
+            frameEndTime = Time.getTime();
+            deltaTime = frameEndTime - frameBeginTime;
+            frameBeginTime = frameEndTime;
+
+            if (deltaTime > 0.0f) {
+                SceneManager.getCurrentScene().update(deltaTime);
+            }
         }
 
     }
@@ -109,5 +134,4 @@ public class MainGame {
         glfwTerminate();
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
     }
-
 }
