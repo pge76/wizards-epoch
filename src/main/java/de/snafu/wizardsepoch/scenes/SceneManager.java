@@ -16,10 +16,14 @@ public class SceneManager {
     private static Scene currentScene;
 
     static {
-        sceneMap.put(BATTLEMAP, new BattleMapScene());
-        sceneMap.put(LEVELEDITOR, new LevelEditorScene());
-        sceneMap.put(OVERWORLD, new OverworldScene());
-        currentScene = sceneMap.get(LEVELEDITOR);
+        try {
+            sceneMap.put(BATTLEMAP, new BattleMapScene());
+            sceneMap.put(LEVELEDITOR, new LevelEditorScene());
+            sceneMap.put(OVERWORLD, new OverworldScene());
+            currentScene = sceneMap.get(LEVELEDITOR);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void changeToScene(SceneType sceneType) {
@@ -31,5 +35,7 @@ public class SceneManager {
         return sceneMap.get(sceneType);
     }
 
-
+    public static void init() {
+        currentScene.init();
+    }
 }

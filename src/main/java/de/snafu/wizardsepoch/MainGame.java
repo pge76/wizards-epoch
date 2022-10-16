@@ -1,22 +1,21 @@
 package de.snafu.wizardsepoch;
 
 import de.snafu.wizardsepoch.scenes.SceneManager;
-import de.snafu.wizardsepoch.util.LoggingOutputStream;
 import de.snafu.wizardsepoch.util.Time;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.Level;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.PrintStream;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL30C.glClearColor;
+import static org.lwjgl.opengl.GLUtil.setupDebugMessageCallback;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -45,7 +44,8 @@ public class MainGame {
 
     @SuppressWarnings("resource") // suppress warnings about ignored Autoclosables from the setCallback Methods
     private void init() {
-        GLFWErrorCallback.createPrint(new PrintStream(new LoggingOutputStream(log, Level.ERROR))).set();
+        //GLFWErrorCallback.createPrint(new PrintStream(new LoggingOutputStream(log, Level.ERROR))).set();
+        GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -54,7 +54,8 @@ public class MainGame {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
         window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Wizards Epoch", NULL, NULL);
 
@@ -88,6 +89,10 @@ public class MainGame {
             glfwSwapInterval(1);
             glfwShowWindow(window);
         }
+
+        GL.createCapabilities();
+        setupDebugMessageCallback(System.err);
+        SceneManager.init();
     }
 
     private void loop() {
@@ -97,23 +102,17 @@ public class MainGame {
 
         frameBeginTime = Time.getTime();
 
-        GL.createCapabilities();
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
 
         if (KeyboardListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
             glfwSetWindowShouldClose(window, true);
         }
 
+        glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            MouseListener.endFrame();
-            KeyboardListener.endFrame();
-
-            glfwSwapBuffers(window);
             glfwPollEvents();
+
 
             frameEndTime = Time.getTime();
             deltaTime = frameEndTime - frameBeginTime;
@@ -122,6 +121,9 @@ public class MainGame {
             if (deltaTime > 0.0f) {
                 SceneManager.getCurrentScene().update(deltaTime);
             }
+            MouseListener.endFrame();
+            KeyboardListener.endFrame();
+            glfwSwapBuffers(window);
         }
 
     }

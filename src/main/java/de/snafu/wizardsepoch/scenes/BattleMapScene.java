@@ -11,4 +11,9 @@ public class BattleMapScene extends Scene {
     public SceneType getType() {
         return SceneType.BATTLEMAP;
     }
+
+    @Override
+    public void init() {
+        
+    }
 }

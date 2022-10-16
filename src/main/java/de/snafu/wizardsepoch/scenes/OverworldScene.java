@@ -30,4 +30,9 @@ public class OverworldScene extends Scene {
     public SceneType getType() {
         return SceneType.OVERWORLD;
     }
+
+    @Override
+    public void init() {
+        
+    }
 }
