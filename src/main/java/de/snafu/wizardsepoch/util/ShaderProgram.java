@@ -1,6 +1,10 @@
 package de.snafu.wizardsepoch.util;
 
 import lombok.extern.log4j.Log4j2;
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL30C.*;
 
@@ -85,4 +89,10 @@ public class ShaderProgram {
         }
     }
 
+    public void uploadMat4fToVertexShader(String varName, Matrix4f mat4) {
+        int varLocation = glGetUniformLocation(programId, varName);
+        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
+        mat4.get(matBuffer);
+        glUniformMatrix4fv(varLocation, false, matBuffer);
+    }
 }

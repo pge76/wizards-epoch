@@ -15,10 +15,10 @@ public class LevelEditorScene extends Scene {
     private final float[] vertexArray = {
             // screen   bottomleft = -1,-1
             // position          // color
-             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, // bottom right red
-            -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, // top left green
-             0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, // top right blue
-            -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f, 1.0f  // bottom left yellow
+             50.5f, -50.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, // bottom right red
+            -50.5f,  50.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, // top left green
+             50.5f,  50.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, // top right blue
+            -50.5f, -50.5f, 0.0f,  1.0f, 1.0f, 0.0f, 1.0f  // bottom left yellow
     };
 
     // counter clockwise
@@ -36,6 +36,9 @@ public class LevelEditorScene extends Scene {
     @Override
     public void update(float dt) {
         sp.bind();
+        camera.getPosition().x -= dt * 50.0f;
+        sp.uploadMat4fToVertexShader("uProjMatrix", camera.getProjectionMatrix());
+        sp.uploadMat4fToVertexShader("uViewMatrix", camera.getViewMatrix());
 
         glBindVertexArray(vaoId);
 
